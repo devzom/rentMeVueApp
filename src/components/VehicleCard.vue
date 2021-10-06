@@ -53,10 +53,10 @@ export default {
       required: true
     }
   },
-
   methods: {
     bookVehicle() {
-      this.saveVehicleToStorage(this.vehicle);
+      this.$store.commit('vehicle/saveToStorage', this.vehicle)
+
       this.$router.push({
         name: 'reservation.id',
         params: {
@@ -65,10 +65,6 @@ export default {
         }
       });
     },
-    saveVehicleToStorage(data) {
-      localStorage.setItem('vehicleToBook', JSON.stringify({ vehicle: data }));
-    }
   }
-
 };
 </script>

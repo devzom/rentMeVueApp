@@ -14,24 +14,26 @@
 
       <div slot="body">
         <div v-if="filteredVehicles.length">
-          <div class="col-3">
-            <label
-              for="vehiclesSelect"
-              class="mr-sm-2"
-            >Filter vehicles by sharing type</label>
-            <select
-              id="vehiclesSelect"
-              v-model="sharingType"
-              class="form-select  mr-sm-2"
-            >
-              <option
-                v-for="(type, index) in typeOfSharing"
-                :key="index"
-                :value="type.value"
+          <div class="row d-flex justify-content-end">
+            <div class="col-3">
+              <label
+                for="vehiclesSelect"
+                class="mr-sm-2"
+              >Filter vehicles by sharing type</label>
+              <select
+                id="vehiclesSelect"
+                v-model="sharingType"
+                class="form-select  mr-sm-2"
               >
-                {{ type.text }}
-              </option>
-            </select>
+                <option
+                  v-for="(type, index) in typeOfSharing"
+                  :key="index"
+                  :value="type.value"
+                >
+                  {{ type.text }}
+                </option>
+              </select>
+            </div>
           </div>
 
           <div class="row">

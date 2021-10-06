@@ -202,7 +202,7 @@ export default {
   },
   computed: {
     vehicleData() {
-      return this.vehicle?.id ? this.vehicle:JSON.parse(localStorage.getItem('vehicleToBook')).vehicle;
+      return this.vehicle?.id ? this.vehicle : this.$store.getters['vehicle/getStorageData']
     },
     sharingType() {
       return this.vehicleData?.sharing_type;
