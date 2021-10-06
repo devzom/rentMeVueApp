@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     bookVehicle() {
-      this.$store.commit('vehicle/saveToStorage', this.vehicle)
+      this.$store.commit('vehicle/saveToStorage', this.vehicle);
 
       this.$router.push({
         name: 'reservation.id',

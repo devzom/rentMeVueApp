@@ -151,7 +151,7 @@ import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
 
 export default {
-  name: 'LoginIndex',
+  name: 'VehicleReservation',
   components: {
     LayoutMinimal,
     Card,
@@ -166,13 +166,14 @@ export default {
   },
   data() {
     const now = new Date();
-    const startTime = now.getTime()
-    const endTime  = now.setMinutes(now.getMinutes() + 15)
+    const startTime = now.getTime();
+    const endTime = now.setMinutes(now.getMinutes() + 15);
 
     const time = now.toTimeString()
       .slice(0, 8);
 
     return {
+      vehicleData: {},
       reservation: {
         start: startTime,
         end: endTime,
@@ -201,18 +202,18 @@ export default {
     };
   },
   computed: {
-    vehicleData() {
-      return this.vehicle?.id ? this.vehicle : this.$store.getters['vehicle/getStorageData']
-    },
     sharingType() {
       return this.vehicleData?.sharing_type;
     }
   },
-
   beforeRouteLeave(to, from, next) {
     localStorage.removeItem('vehicleToBook');
     next();
   },
+  created() {
+    this.vehicleData =  this.vehicle?.id ? this.vehicle : this.$store.getters['vehicle/getStorageData'];
+  },
+
   mounted() {
     this.setNow();
     this.setToday();
@@ -225,13 +226,13 @@ export default {
       };
 
       if (this.sharingType === 'planed') {
-        const startDateTime = this.reservation.startTime
+        const startDateTime = this.reservation.startTime;
         const actualDateTime = new Date().toISOString();
 
         reservationData = {
           ...{
             'start_at': actualDateTime,
-            'end_at': null
+            'end_at': this.reservation.end
           }
         };
       }
@@ -253,22 +254,22 @@ export default {
       return date < today.getTime() || date > new Date(today.getTime() + 7 * 24 * 3600 * 1000);
     },
 
-
     async sendReservation(data) {
       await axios.post('/bookings', data)
         .then(({ data }) => {
 
           this.$toasted.success(
             'Reservation has been started'
-          )
+          );
 
           localStorage.removeItem('vehicleToBook');
-          this.$router.replace({name: 'home.index'});
-        }).catch(error =>{
+          this.$router.replace({ name: 'home.index' });
+        })
+        .catch(error => {
           this.$toasted.error(
             error.response.data.message
-          )
-      });
+          );
+        });
     },
     setNow() {
       const now = new Date();
@@ -276,22 +277,22 @@ export default {
       const time = now.toTimeString()
         .slice(0, 8);
 
-      this.reservation.startTime = this.limit.start.minTime = time
+      this.reservation.startTime = this.limit.start.minTime = time;
     },
     clearTime() {
       this.reservation.startTime = '';
     },
     setToday() {
-      const now = new Date()
-      const dateNow = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-      this.reservation.startDate = this.limit.start.minDate=  dateNow
+      const now = new Date();
+      const dateNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      this.reservation.startDate = this.limit.start.minDate = dateNow;
     },
 
-    startTimeFormatter(startTime){
+    startTimeFormatter(startTime) {
       console.log(startTime);
 
       if (startTime.value) {
-        this.limit.start.stateTime = false
+        this.limit.start.stateTime = false;
       }
     },
     onReset(event) {

@@ -12,10 +12,11 @@ import "./plugins/font-awesome";
 import App from "./App.vue";
 
 import { msToTime } from "@/utils/time";
-const defaultCurrency = "$";
-
 // toast notification
 import Toasted from "vue-toasted";
+
+const defaultCurrency = "$";
+
 const toastOptions = {
   keepOnHover: true,
   duration: 2500,

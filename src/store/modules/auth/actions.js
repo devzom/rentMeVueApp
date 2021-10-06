@@ -13,7 +13,10 @@ export const login = async ({ commit }, payload) => {
 
   await axios.post("/login", userPayload).then(({ data }) => {
     const access_token = data.data.token.access_token;
-    commit("login", { user: userPayload.email, access_token });
+    commit("login", {
+      user: userPayload.email,
+      access_token
+    });
     store.commit("account/set", payload.email);
 
     Vue.router.push({

@@ -94,13 +94,13 @@ export default {
     };
   },
   created() {
-      this.fetchBookings();
+    this.fetchBookings();
   },
   methods: {
     async fetchBookings() {
       await axios.get('/bookings')
         .then((response => {
-          this.bookings = response.data.data.reverse()
+          this.bookings = response.data.data.reverse();
         }))
         .catch((e) => {
           console.error(e);

@@ -38,8 +38,11 @@ export default [
     component: () => import("@/views/Bookings/_id.vue"),
     props: true,
     beforeRouteEnter(to, from, next) {
-      if (!Number.isNaN(to.params.id)) next();
-      else next("/bookings");
+      if (!Number.isNaN(to.params.id)) {
+        next();
+      } else {
+        next("/bookings");
+      }
     },
     meta: {
       auth: true
@@ -52,8 +55,11 @@ export default [
     name: "reservation.id",
     component: () => import("@/views/Bookings/_vehicleId.vue"),
     beforeRouteEnter(to, from, next) {
-      if (!Number.isNaN(to.params.id)) next();
-      else next("/");
+      if (!Number.isNaN(to.params.id)) {
+        next();
+      } else {
+        next("/");
+      }
     },
     props: true,
     meta: {

@@ -13,7 +13,7 @@ export default {
   },
   getters: {
     getStorageData(state) {
-      return localStorage.getItem(state.vehicleStorageKey) || {};
+      return JSON.parse(localStorage.getItem(state.vehicleStorageKey)) || {};
     }
   },
   actions: {}

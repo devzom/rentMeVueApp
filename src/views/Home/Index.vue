@@ -72,13 +72,19 @@ export default {
       isLoading: true,
       vehicles: [],
       sharingType: null,
-      typeOfSharing:[
+      typeOfSharing: [
         {
           value: null,
           text: 'All types'
         },
-        { value: 'planned', text: 'Planned'},
-        { value: 'spontaneous', text: 'Spontaneous'}
+        {
+          value: 'planned',
+          text: 'Planned'
+        },
+        {
+          value: 'spontaneous',
+          text: 'Spontaneous'
+        }
       ],
     };
   },
@@ -87,9 +93,9 @@ export default {
     username() {
       return this.$store.state.account.username;
     },
-    filteredVehicles(){
-      return !this.sharingType? this.vehicles
-      : this.vehicles.filter(vehicle=> vehicle.sharing_type === this.sharingType)
+    filteredVehicles() {
+      return !this.sharingType ? this.vehicles
+        :this.vehicles.filter(vehicle => vehicle.sharing_type === this.sharingType);
     }
   },
   created() {
