@@ -24,119 +24,59 @@
             <li>{{ vehicleData.price_list.price_per_hour | price }} / hour</li>
           </ul>
         </div>
+        <hr>
+        <h6 class="text-center">
+          Available trip type: <strong> {{ sharingType }}</strong>
+        </h6>
+        <hr>
+        <div
+          v-if="sharingType === 'planned'"
+        >
+          Select datetime range for vehicle reservation.<br>
+          It's allowed to reserve maximum period of 7 days.
 
-        <div>
-          <h5>Available trip type:</h5>
-          <b-tabs
-            content-class="mt-3"
-            fill
+          <div class="d-flex justify-content-center mb-4">
+            <div>
+              <p>Start time and date</p>
+              <date-picker
+                v-model="reservation.start"
+                :disabled-date="notBeforeNowDate"
+                :disabled-time="notBeforeNowTime"
+                :minute-step="15"
+                :show-second="false"
+                type="datetime"
+                value-type="timestamp"
+              />
+            </div>
+          </div>
+          <div class="d-flex justify-content-center">
+            <div>
+              <p>End time and date</p>
+              <date-picker
+                v-model="reservation.end"
+                :default-value="reservation.end"
+                :disabled-date="disabledBeforeTodayAndAfterAWeek"
+                :disabled-time="notBeforeNowTime"
+                :minute-step="15"
+                :show-second="false"
+                type="datetime"
+                value-type="timestamp"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div
+          v-if="!btnDisabled"
+          class="row justify-content-center mt-3"
+        >
+          <button
+            :disabled="btnDisabled"
+            class="btn btn-success"
+            @click="reserveVehicle"
           >
-            <b-tab
-              v-if="sharingType === 'planned'"
-              active
-              class="p-2"
-              title="Planned"
-            >
-              <div class="d-flex justify-content-center mb-4">
-                <div>
-                  <p>Start time and date</p>
-                  <date-picker
-                    v-model="reservation.start"
-                    type="datetime"
-                    :show-second="false"
-                    :minute-step="15"
-                    :disabled-date="notBeforeNowDate"
-                    :disabled-time="notBeforeNowTime"
-                    value-type="timestamp"
-                  />
-                </div>
-              </div>
-              <div class="d-flex justify-content-center">
-                <div>
-                  <p>End time and date</p>
-                  <date-picker
-                    v-model="reservation.end"
-                    type="datetime"
-                    :show-second="false"
-                    :minute-step="15"
-                    :default-value="reservation.end"
-                    :disabled-date="disabledBeforeTodayAndAfterAWeek"
-                    :disabled-time="notBeforeNowTime"
-                    value-type="timestamp"
-                  />
-                </div>
-              </div>
-
-              <!--              <b-form-->
-              <!--                v-if="show"-->
-              <!--                @reset="onReset"-->
-              <!--                @submit="reserveVehicle"-->
-              <!--              >-->
-              <!--                <div>-->
-              <!--                  <strong>Start trip preferences</strong>-->
-              <!--                  <b-form-datepicker-->
-              <!--                    id="datepicker-invalid"-->
-              <!--                    v-model="reservation.startDate"-->
-              <!--                    :state="limit.start.stateDate"-->
-              <!--                    class="mb-2"-->
-              <!--                    size="sm"-->
-              <!--                    :min="limit.start.minDate"-->
-              <!--                    :max="limit.start.maxDate"-->
-              <!--                  />-->
-              <!--                  <b-form-timepicker-->
-              <!--                    id="timepicker-start"-->
-              <!--                    v-model="reservation.startTime"-->
-              <!--                    :state="limit.start.stateTime"-->
-              <!--                    class="mb-2"-->
-              <!--                    size="sm"-->
-              <!--                    @context="startTimeFormatter"-->
-              <!--                  />-->
-
-
-              <!--                  <hr>-->
-              <!--                  <strong>End trip preferences</strong>-->
-              <!--                  <b-form-datepicker-->
-              <!--                    id="datepicker-valid"-->
-              <!--                    v-model="reservation.endDate"-->
-              <!--                    :state="limit.end.stateDate"-->
-              <!--                    class="mb-2"-->
-              <!--                    size="sm"-->
-              <!--                    :min="limit.end.minDate"-->
-              <!--                    :max="limit.end.maxDate"-->
-              <!--                  />-->
-              <!--                  <b-form-timepicker-->
-              <!--                    id="timepicker-sm"-->
-              <!--                    v-model="reservation.endTime"-->
-              <!--                    :state="limit.end.stateTime"-->
-              <!--                    class="mb-2"-->
-              <!--                    size="sm"-->
-              <!--                  />-->
-              <!--                </div>-->
-
-              <!--                <div class="row d-flex mt-3">-->
-              <!--                  <button-->
-              <!--                    :disabled="btnDisabled"-->
-              <!--                    class="btn btn-success"-->
-              <!--                  >-->
-              <!--                    Reserve-->
-              <!--                  </button>-->
-              <!--                </div>-->
-              <!--              </b-form>-->
-            </b-tab>
-            <b-tab
-              v-if="sharingType === 'spontaneous'"
-              class="text-center p-2"
-              lazy
-              title="Spontaneous"
-            >
-              <button
-                class="btn btn-success"
-                @click="reserveVehicle"
-              >
-                Start
-              </button>
-            </b-tab>
-          </b-tabs>
+            Start
+          </button>
         </div>
       </div>
     </card>
@@ -196,7 +136,7 @@ export default {
           maxDate: '',
         }
       },
-      btnDisabled: true,
+      btnDisabled: false,
       maxDaysDuration: 7,
       show: true
     };
@@ -211,12 +151,15 @@ export default {
     next();
   },
   created() {
-    this.vehicleData =  this.vehicle?.id ? this.vehicle : this.$store.getters['vehicle/getStorageData'];
+    this.vehicleData = this.vehicle?.id ? this.vehicle:this.$store.getters['vehicle/getStorageData'];
   },
 
   mounted() {
-    this.setNow();
-    this.setToday();
+    if (this.sharingType === 'planned') {
+      // this.btnDisabled=true
+      this.setNow();
+      this.setToday();
+    }
   },
   methods: {
     reserveVehicle() {
@@ -225,21 +168,39 @@ export default {
         'type': this.sharingType,
       };
 
-      if (this.sharingType === 'planed') {
-        const startDateTime = this.reservation.startTime;
-        const actualDateTime = new Date().toISOString();
+      if (this.sharingType === 'planned') {
+        const start_at = new Date(this.reservation.start).toISOString();
+        const end_at = new Date(this.reservation.end).toISOString();
 
         reservationData = {
+          ...reservationData,
           ...{
-            'start_at': actualDateTime,
-            'end_at': this.reservation.end
+            start_at,
+            end_at
           }
         };
       }
 
-      console.log(reservationData);
-
       this.sendReservation(reservationData);
+    },
+    async sendReservation(data) {
+      await axios.post('/bookings', data)
+        .then(({ data }) => {
+
+          console.log(data);
+
+          this.$toasted.success(
+            'Reservation has been started'
+          );
+
+          localStorage.removeItem('vehicleToBook');
+          this.$router.replace({ name: 'home.index' });
+        })
+        .catch(error => {
+          this.$toasted.error(
+            error.response.error.status
+          );
+        });
     },
     notBeforeNowDate(date) {
       return date < new Date(new Date().setHours(0, 0, 0, 0));
@@ -252,24 +213,6 @@ export default {
       today.setHours(0, 0, 0, 0);
 
       return date < today.getTime() || date > new Date(today.getTime() + 7 * 24 * 3600 * 1000);
-    },
-
-    async sendReservation(data) {
-      await axios.post('/bookings', data)
-        .then(({ data }) => {
-
-          this.$toasted.success(
-            'Reservation has been started'
-          );
-
-          localStorage.removeItem('vehicleToBook');
-          this.$router.replace({ name: 'home.index' });
-        })
-        .catch(error => {
-          this.$toasted.error(
-            error.response.data.message
-          );
-        });
     },
     setNow() {
       const now = new Date();
