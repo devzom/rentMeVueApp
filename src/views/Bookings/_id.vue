@@ -135,8 +135,7 @@ export default {
   computed: {
     isActive() {
       // check if the booking is already running based on existing 'end_date==end_at'
-      return !Boolean(this.bookingData?.end_at);
-      // return !Boolean(this.bookingData?.end_at) && this.bookingData?.status===1;
+      return !Boolean(this.bookingData?.end_at) && this.bookingData?.status===1;
     }
   },
   created() {
