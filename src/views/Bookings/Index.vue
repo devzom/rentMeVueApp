@@ -42,7 +42,7 @@
             >
               <td>
                 {{
-                  booking.status | rentStatus
+                  booking | rentStatus
                 }}
               </td>
               <td>

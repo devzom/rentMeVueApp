@@ -32,7 +32,9 @@ Vue.filter("capitalize", value => {
   return value.charAt(0).toUpperCase() + value.slice(1);
 });
 
-Vue.filter("rentStatus", (statusId = 1) => {
+Vue.filter("rentStatus", booking => {
+  const { status: statusId } = booking;
+
   const statusType = [
     {
       status: 1,
@@ -48,7 +50,7 @@ Vue.filter("rentStatus", (statusId = 1) => {
     }
   ];
 
-  return statusType.find(type => type.status === statusId).text;
+  return statusType.find(type => type.status === statusId)?.text || "Error";
 });
 
 Vue.filter("formatDateTime", dateTime => {
@@ -67,6 +69,8 @@ Vue.filter("price", (value, withCurrency = true) => {
 
 Vue.filter("calculateRentPrice", booking => {
   if (!booking) return `0 ${defaultCurrency}`;
+  if (booking.status == 2) return "------";
+
   const perHour = booking.price_list.price_per_hour ?? 10.0;
   const perMinute = booking.price_list.price_per_minute ?? 0.19;
 
