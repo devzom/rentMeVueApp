@@ -1,0 +1,187 @@
+{
+	"info": {
+		"_postman_id": "09c36b04-145f-424b-9a86-1708df37e431",
+		"name": "Assessment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\" : \"user@example.com\",\n    \"password\" : \"rand0m2021\"\n}"
+				},
+				"url": {
+					"raw": "{{API_URL}}/login",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Vehicles",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/vehicles",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"vehicles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Bookings",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/bookings",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"bookings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Booking",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{API_URL}}/bookings/1",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"bookings",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Booking",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"function pad(number) {",
+							"    if (number < 10) {",
+							"    return '0' + number;",
+							"    }",
+							"    return number;",
+							"}",
+							"",
+							"Date.prototype.toISOString = function() {",
+							"    return this.getUTCFullYear() +",
+							"    '-' + pad(this.getUTCMonth() + 1) +",
+							"    '-' + pad(this.getUTCDate()) +",
+							"    'T' + pad(this.getUTCHours()) +",
+							"    ':' + pad(this.getUTCMinutes()) +",
+							"    ':' + pad(this.getUTCSeconds()) +",
+							"    '+00:00'",
+							"};",
+							"",
+							"var currentTimestampS = new Date();",
+							"var currentTimestamp = new Date().toISOString();",
+							"var oneHourLater = new Date(currentTimestampS.getTime() + 60 * 60000).toISOString()",
+							"pm.globals.set(\"currentTimestamp\", currentTimestamp);",
+							"pm.globals.set(\"oneHourLater\", oneHourLater);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"vehicle_id\" : 1,\n    \"type\" : \"planned\",\n    \"start_at\" : \"{{currentTimestamp}}\",\n    \"end_at\" : \"{{oneHourLater}}\"\n}"
+				},
+				"url": {
+					"raw": "{{API_URL}}/bookings",
+					"host": [
+						"{{API_URL}}"
+					],
+					"path": [
+						"bookings"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "API_URL",
+			"value": "https://assessment.hub2go.de/api"
+		},
+		{
+			"key": "TOKEN",
+			"value": ""
+		}
+	]
+}
