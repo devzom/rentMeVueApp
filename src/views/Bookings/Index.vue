@@ -24,12 +24,6 @@
                 End time
               </th>
               <th>
-                Sharing type
-              </th>
-              <th>
-                Price
-              </th>
-              <th>
                 Action
               </th>
             </tr>
@@ -59,15 +53,6 @@
                 {{
                   booking.end_at | formatDateTime
                 }}
-              </td>
-
-              <td>
-                {{
-                  booking.vehicle.sharing_type | capitalize
-                }}
-              </td>
-              <td>
-                {{ booking | calculateRentPrice }}
               </td>
               <td>
                 <router-link
