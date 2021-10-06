@@ -175,7 +175,7 @@ export default {
         })
         .catch((error) => {
           this.$toasted.error(
-              error.response.data.message
+              error.response.data.errors.status
             )
 
 
