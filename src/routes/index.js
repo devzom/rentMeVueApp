@@ -49,7 +49,7 @@ export default [
   // Reservation
   {
     path: "/reservation/:id",
-    name: "reservation-vehicle",
+    name: "reservation.id",
     component: () => import("@/views/Bookings/_vehicleId.vue"),
     beforeRouteEnter(to, from, next) {
       if (!Number.isNaN(to.params.id)) next();

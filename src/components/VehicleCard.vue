@@ -58,7 +58,7 @@ export default {
     bookVehicle() {
       this.saveVehicleToStorage(this.vehicle);
       this.$router.push({
-        name: 'reservation-vehicle',
+        name: 'reservation.id',
         params: {
           id: this.vehicle.id,
           vehicle: this.vehicle
