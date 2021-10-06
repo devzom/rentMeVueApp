@@ -87,9 +87,9 @@
             </h5>
             <button
               class="btn btn-sm btn-outline-warning"
-              @click="stopBooking"
+              @click="cancelBooking"
             >
-              Stop booking
+              Cancel booking
             </button>
             <hr>
           </div>
@@ -135,7 +135,8 @@ export default {
   computed: {
     isActive() {
       // check if the booking is already running based on existing 'end_date==end_at'
-      return !Boolean(this.bookingData?.end_at) && this.bookingData?.status===1;
+      return !Boolean(this.bookingData?.end_at);
+      // return !Boolean(this.bookingData?.end_at) && this.bookingData?.status===1;
     }
   },
   created() {
@@ -160,14 +161,54 @@ export default {
 
         });
     },
+    async cancelBooking() {
+
+      this.$bvModal.msgBoxConfirm('Please confirm that you want to cancel this booking.', {
+          title: 'Please confirm',
+          size: 'sm',
+          buttonSize: 'sm',
+          okVariant: 'danger',
+          okTitle: 'Yes, delete',
+          cancelTitle: 'No, cancel',
+          footerClass: 'p-2',
+          hideHeaderClose: false,
+          centered: true
+        })
+        .then(value => {
+          if (value) {
+            this.setLoading();
+            axios.delete(`/bookings/${this.id}`)
+              .then(() => {
+                this.$toasted.success(
+                  'Booking has been stopped'
+                );
+
+                this.$router.push({ name: 'bookings.index' });
+              })
+              .catch((error) => {
+                this.$toasted.error(
+                  error.response.data.errors.status
+                );
+
+                setTimeout(() => {
+                  this.$router.push('/bookings');
+                }, 1500);
+              })
+              .finally(() => {
+                this.setLoading(false);
+              });
+          }
+        })
+    },
+
     async stopBooking() {
       this.setLoading();
 
       await axios.delete(`/bookings/${this.id}`)
         .then(() => {
           this.$toasted.success(
-              'Booking has been stopped'
-            )
+            'Booking has been stopped'
+          );
 
           setTimeout(() => {
             this.$router.push({ name: 'bookings.index' });
@@ -175,9 +216,8 @@ export default {
         })
         .catch((error) => {
           this.$toasted.error(
-              error.response.data.errors.status
-            )
-
+            error.response.data.errors.status
+          );
 
           setTimeout(() => {
             this.$router.push('/bookings');
