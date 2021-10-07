@@ -18,9 +18,15 @@ export default {
   }),
   mutations: {},
   getters: {
-    statusText: state => statusId => {
+    statusText: state => payload => {
+      const { status, end_at } = payload;
+
+      if (end_at && new Date(end_at) < Date.now()) {
+        return state.statusType[2].text;
+      }
+
       return (
-        state.statusType.find(type => type.status === statusId)?.text || "Error"
+        state.statusType.find(type => type.status === status)?.text || "Error"
       );
     }
   },

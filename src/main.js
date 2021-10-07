@@ -31,8 +31,8 @@ Vue.filter("capitalize", value => {
 });
 
 Vue.filter("rentStatus", booking => {
-  const { status: statusId } = booking;
-  return store.getters["booking/statusText"](statusId);
+  const { status, end_at } = booking;
+  return store.getters["booking/statusText"]({ status, end_at });
 });
 
 Vue.filter("formatDateTime", dateTime => {
