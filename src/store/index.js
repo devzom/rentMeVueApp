@@ -1,10 +1,9 @@
 import Vuex from "vuex";
-
 // Modules
-import account from "./modules/account";
-import auth from "./modules/auth";
-import booking from "./modules/booking";
-import vehicle from "./modules/vehicle";
+import account from "@/store/account";
+import auth from "@/store/auth";
+import booking from "@/store/booking";
+import vehicle from "@/store/vehicle";
 
 export default new Vuex.Store({
   modules: {
