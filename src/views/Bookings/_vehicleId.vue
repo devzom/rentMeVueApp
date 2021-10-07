@@ -64,17 +64,17 @@
               </date-picker>
             </section>
           </div>
-          <div
-            class="row justify-content-center mt-3"
+        </div>
+        <div
+          class="row justify-content-center mt-3"
+        >
+          <button
+            :disabled="!reservationAllowed"
+            class="btn btn-success"
+            @click="reserveVehicle"
           >
-            <button
-              :disabled="!reservationAllowed"
-              class="btn btn-success"
-              @click="reserveVehicle"
-            >
-              Start
-            </button>
-          </div>
+            Start
+          </button>
         </div>
         <div
           v-if="isError"
