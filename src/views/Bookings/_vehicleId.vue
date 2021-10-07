@@ -1,5 +1,5 @@
 <template>
-  <layout-minimal>
+  <v-layout>
     <card contextual-style="dark">
       <div
         slot="header"
@@ -66,7 +66,7 @@
           </div>
         </div>
         <div
-          class="row justify-content-center mt-3"
+          class="d-flex justify-content-center mt-3"
         >
           <button
             :disabled="!reservationAllowed"
@@ -91,11 +91,11 @@
         </div>
       </div>
     </card>
-  </layout-minimal>
+  </v-layout>
 </template>
 
 <script>
-import LayoutMinimal from '@/layouts/Minimal.vue';
+import VLayout from '@/layouts/Default.vue';
 import Card from '@/components/Card.vue';
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
@@ -106,7 +106,7 @@ import StatesMixin from '@/mixins/states';
 export default {
   name: 'VehicleReservation',
   components: {
-    LayoutMinimal,
+    VLayout,
     Card,
     DatePicker
   },
