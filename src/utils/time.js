@@ -13,34 +13,12 @@ function dateDifferenceMilliseconds(date1, date2) {
   return Math.abs(endTime - startTime);
 }
 
-function pad(number) {
-  if (number < 10) {
-    return "0" + number;
-  }
-  return number;
+function dateDifferenceDays(date1, date2) {
+  const startTime = new Date(date1);
+  const endTime = new Date(date2);
+
+  const diffTime = Math.abs(date2 - date1);
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
-Date.prototype.toISOString = function() {
-  return (
-    this.getUTCFullYear() +
-    "-" +
-    pad(this.getUTCMonth() + 1) +
-    "-" +
-    pad(this.getUTCDate()) +
-    "T" +
-    pad(this.getUTCHours()) +
-    ":" +
-    pad(this.getUTCMinutes()) +
-    ":" +
-    pad(this.getUTCSeconds()) +
-    "+00:00"
-  );
-};
-
-var currentTimestampS = new Date();
-var currentTimestamp = new Date().toISOString();
-var oneHourLater = new Date(
-  currentTimestampS.getTime() + 60 * 60000
-).toISOString();
-
-export { msToTime, dateDifferenceMilliseconds };
+export { msToTime, dateDifferenceMilliseconds, dateDifferenceDays };

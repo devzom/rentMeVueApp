@@ -2,7 +2,8 @@ export default {
   data() {
     return {
       isLoading: true,
-      isError: false
+      isError: false,
+      errors: []
     };
   },
   methods: {
@@ -10,6 +11,7 @@ export default {
       this.isLoading = state;
     },
     setError(state = true) {
+      this.errors = [];
       this.isError = state;
     }
   }

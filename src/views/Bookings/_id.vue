@@ -106,7 +106,7 @@
 <script>
 import VLayout from '@/layouts/Default.vue';
 import VCard from '@/components/Card.vue';
-import ToastMixin from '@/mixins/states';
+import StatesMixin from '@/mixins/states';
 import Loading from '@/components/Loading';
 
 export default {
@@ -117,7 +117,7 @@ export default {
     VCard,
   },
   mixins: [
-    ToastMixin
+    StatesMixin
   ],
   props: {
     id: {

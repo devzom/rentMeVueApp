@@ -32,51 +32,62 @@
         <div
           v-if="sharingType === 'planned'"
         >
-          Select datetime range for vehicle reservation.<br>
-          It's allowed to reserve maximum period of 7 days.
-
+          <span>
+            Select datetime range for vehicle reservation.<br>
+            It's allowed to reserve maximum period of 7 days.
+          </span>
+          <hr>
           <div class="d-flex justify-content-center mb-4">
-            <div>
-              <p>Start time and date</p>
+            <section>
               <date-picker
-                v-model="reservation.start"
+                v-model="datetimePickerValues"
+                type="datetime"
+                placeholder="Select datetime range"
+                range
                 :disabled-date="notBeforeNowDate"
                 :disabled-time="notBeforeNowTime"
                 :minute-step="15"
                 :show-second="false"
-                type="datetime"
                 value-type="timestamp"
-              />
-            </div>
+                :show-time-panel="showTimeRangePanel"
+                @close="handleRangeClose"
+                @change="timeFormat"
+              >
+                <template v-slot:footer>
+                  <button
+                    class="mx-btn mx-btn-text"
+                    @click="toggleTimeRangePanel"
+                  >
+                    {{ showTimeRangePanel ? 'select date':'select time' }}
+                  </button>
+                </template>
+              </date-picker>
+            </section>
           </div>
-          <div class="d-flex justify-content-center">
-            <div>
-              <p>End time and date</p>
-              <date-picker
-                v-model="reservation.end"
-                :default-value="reservation.end"
-                :disabled-date="disabledBeforeTodayAndAfterAWeek"
-                :disabled-time="notBeforeNowTime"
-                :minute-step="15"
-                :show-second="false"
-                type="datetime"
-                value-type="timestamp"
-              />
-            </div>
+          <div
+            class="row justify-content-center mt-3"
+          >
+            <button
+              :disabled="!reservationAllowed"
+              class="btn btn-success"
+              @click="reserveVehicle"
+            >
+              Start
+            </button>
           </div>
         </div>
-
         <div
-          v-if="!btnDisabled"
-          class="row justify-content-center mt-3"
+          v-if="isError"
+          class="text-danger mt-3"
         >
-          <button
-            :disabled="btnDisabled"
-            class="btn btn-success"
-            @click="reserveVehicle"
-          >
-            Start
-          </button>
+          <ul>
+            <li
+              v-for="(error,index) in errors"
+              :key="index"
+            >
+              {{ error }}
+            </li>
+          </ul>
         </div>
       </div>
     </card>
@@ -86,9 +97,11 @@
 <script>
 import LayoutMinimal from '@/layouts/Minimal.vue';
 import Card from '@/components/Card.vue';
-
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
+
+import { dateDifferenceDays} from '@/utils/time'
+import StatesMixin from '@/mixins/states';
 
 export default {
   name: 'VehicleReservation',
@@ -97,6 +110,9 @@ export default {
     Card,
     DatePicker
   },
+  mixins: [
+    StatesMixin
+  ],
   props: {
     vehicle: {
       type: Object,
@@ -105,45 +121,22 @@ export default {
     },
   },
   data() {
-    const now = new Date();
-    const startTime = now.getTime();
-    const endTime = now.setMinutes(now.getMinutes() + 15);
-
-    const time = now.toTimeString()
-      .slice(0, 8);
-
     return {
       vehicleData: {},
-      reservation: {
-        start: startTime,
-        end: endTime,
-      },
-      limit: {
-        start: {
-          stateTime: null,
-          stateDate: null,
-          minTime: '',
-          minDate: '',
-          maxTime: '',
-          maxDate: '',
-        },
-        end: {
-          stateTime: null,
-          stateDate: null,
-          minTime: '',
-          minDate: '',
-          maxTime: '',
-          maxDate: '',
-        }
-      },
-      btnDisabled: false,
+      datetimePickerValues: [],
+      isValidPeriod: true,
       maxDaysDuration: 7,
-      show: true
+      show: true,
+      showTimePanel: false,
+      showTimeRangePanel: false,
     };
   },
   computed: {
     sharingType() {
       return this.vehicleData?.sharing_type;
+    },
+    reservationAllowed() {
+      return this.sharingType !== 'planned'? true : this.isValidPeriod;
     }
   },
   beforeRouteLeave(to, from, next) {
@@ -151,26 +144,50 @@ export default {
     next();
   },
   created() {
-    this.vehicleData = this.vehicle?.id ? this.vehicle:this.$store.getters['vehicle/getStorageData'];
-  },
-
-  mounted() {
+    this.vehicleData = this.vehicle?.id ? this.vehicle : this.$store.getters['vehicle/getStorageData'];
     if (this.sharingType === 'planned') {
-      // this.btnDisabled=true
       this.setNow();
-      this.setToday();
     }
   },
+
   methods: {
     reserveVehicle() {
+      this.setError(false)
+      if (!this.isValidPeriod){
+        this.$toasted.error(
+          'Picked period of start and end datetime is invalid'
+        );
+
+        return
+      }
+
       let reservationData = {
         'vehicle_id': this.vehicleData.id,
         'type': this.sharingType,
       };
 
       if (this.sharingType === 'planned') {
-        const start_at = new Date(this.reservation.start).toISOString();
-        const end_at = new Date(this.reservation.end).toISOString();
+
+        function pad(number) {
+          if (number < 10) {
+            return '0' + number;
+          }
+          return number;
+        }
+
+        Date.prototype.toISOString = function () {
+          return this.getUTCFullYear() +
+            '-' + pad(this.getUTCMonth() + 1) +
+            '-' + pad(this.getUTCDate()) +
+            'T' + pad(this.getUTCHours()) +
+            ':' + pad(this.getUTCMinutes()) +
+            ':' + pad(this.getUTCSeconds()) +
+            '+00:00'
+        };
+
+        const start_at = new Date(this.datetimePickerValues[0]).toISOString();
+        const end_at = new Date(this.datetimePickerValues[1]).toISOString();
+
 
         reservationData = {
           ...reservationData,
@@ -185,21 +202,27 @@ export default {
     },
     async sendReservation(data) {
       await axios.post('/bookings', data)
-        .then(({ data }) => {
-
-          console.log(data);
-
+        .then(() => {
           this.$toasted.success(
             'Reservation has been started'
           );
 
-          localStorage.removeItem('vehicleToBook');
+          this.$store.commit('vehicle/deleteData')
           this.$router.replace({ name: 'home.index' });
         })
         .catch(error => {
+          this.setError()
+
+          const errorData = error.response.data
+
           this.$toasted.error(
-            error.response.error.status
+            errorData.message
           );
+
+          for (const errorDataKey in errorData.errors) {
+            console.log(errorData.errors[errorDataKey]);
+            this.errors.push(errorData.errors[errorDataKey][0])
+          }
         });
     },
     notBeforeNowDate(date) {
@@ -208,46 +231,30 @@ export default {
     notBeforeNowTime(date) {
       return date < new Date(new Date().getTime());
     },
-    disabledBeforeTodayAndAfterAWeek(date) {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      return date < today.getTime() || date > new Date(today.getTime() + 7 * 24 * 3600 * 1000);
-    },
     setNow() {
       const now = new Date();
-      // Grab the HH:mm:ss part of the time string
-      const time = now.toTimeString()
-        .slice(0, 8);
+      const startTime = now.getTime();
+      const endTime = now.setMinutes(now.getMinutes() + 60) // set default end time +1 from now
+      this.datetimePickerValues= [startTime, endTime]
 
-      this.reservation.startTime = this.limit.start.minTime = time;
     },
-    clearTime() {
-      this.reservation.startTime = '';
-    },
-    setToday() {
-      const now = new Date();
-      const dateNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      this.reservation.startDate = this.limit.start.minDate = dateNow;
-    },
+  timeFormat(timestamps=[]){
+      const start = timestamps[0]
+      const end = timestamps[0]
 
-    startTimeFormatter(startTime) {
-      console.log(startTime);
+    const daysDifference = dateDifferenceDays(start, end)
+    this.isValidPeriod = daysDifference <= this.maxDaysDuration
+  },
 
-      if (startTime.value) {
-        this.limit.start.stateTime = false;
-      }
+    toggleTimeRangePanel() {
+      this.showTimeRangePanel = !this.showTimeRangePanel;
     },
-    onReset(event) {
-      event.preventDefault();
-      // Reset our form values
-
-      // Trick to reset/clear native browser form validation state
-      this.show = false;
-      this.$nextTick(() => {
-        this.show = true;
-      });
-    }
+    handleOpenChange() {
+      this.showTimePanel = false;
+    },
+    handleRangeClose() {
+      this.showTimeRangePanel = false;
+    },
   },
 };
 </script>
