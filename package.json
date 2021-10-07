@@ -1,5 +1,9 @@
 {
   "name": "vue-rent-me",
+  "author": "Jakub Zomerfeld",
+  "contributors": [
+    "Jakub Zomerfeld <jakub.zomerfeld@gmail.com>"
+  ],
   "version": "0.1.0",
   "scripts": {
     "serve": "vue-cli-service serve",
